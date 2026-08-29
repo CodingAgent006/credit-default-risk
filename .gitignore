@@ -1,0 +1,13 @@
+# Python environment & cache
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Large files & local artifacts
+data/*.csv
+models/*.joblib
+
+# Docker / OS settings
+.DS_Store
+.env
