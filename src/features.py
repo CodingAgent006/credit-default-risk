@@ -1,42 +1,47 @@
-import pandas as pd
 import numpy as np
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, FunctionTransformer
 
 def build_preprocessor() -> ColumnTransformer:
-    """
-    Creates a scikit-learn ColumnTransformer for preprocessing 
-    numerical and categorical columns.
-    """
-    # 1. Numerical pipeline: Imputation -> Log Transformed Income -> Scaling
-    numeric_features = [
-        'person_age', 'person_income', 'person_emp_length', 
-        'loan_amnt', 'loan_int_rate', 'loan_percent_income', 
-        'cb_person_cred_hist_length'
-    ]
+    """Creates preprocessing pipeline without data leakage."""
     
-    numeric_transformer = Pipeline(steps=[
+    # 1. Numerical Pipeline: Median Impute -> Log Transform Income -> Scale
+    # We use a custom transformer logic for income log-scaling
+    log_cols = ['person_income']
+    standard_num_cols = [
+        'person_age', 'person_emp_length', 'loan_amnt', 
+        'loan_int_rate', 'loan_percent_income', 'cb_person_cred_hist_length'
+    ]
+
+    log_pipeline = Pipeline(steps=[
+        ('imputer', SimpleImputer(strategy='median')),
+        ('log', FunctionTransformer(np.log1p, feature_names_in_="same")),
+        ('scaler', StandardScaler())
+    ])
+
+    num_pipeline = Pipeline(steps=[
         ('imputer', SimpleImputer(strategy='median')),
         ('scaler', StandardScaler())
     ])
 
-    # 2. Categorical pipeline: One-Hot Encoding
-    categorical_features = [
+    # 2. Categorical Pipeline
+    cat_cols = [
         'person_home_ownership', 'loan_intent', 
         'loan_grade', 'cb_person_default_on_file'
     ]
     
-    categorical_transformer = Pipeline(steps=[
+    cat_pipeline = Pipeline(steps=[
         ('onehot', OneHotEncoder(handle_unknown='ignore', drop='first'))
     ])
 
-    # 3. Combine into ColumnTransformer
+    # 3. Combine Processors
     preprocessor = ColumnTransformer(
         transformers=[
-            ('num', numeric_transformer, numeric_features),
-            ('cat', categorical_transformer, categorical_features)
+            ('num_log', log_pipeline, log_cols),
+            ('num_std', num_pipeline, standard_num_cols),
+            ('cat', cat_pipeline, cat_cols)
         ]
     )
     
