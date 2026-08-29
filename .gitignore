@@ -3,11 +3,12 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+.ipynb_checkpoints/
 
-# Large files & local artifacts
+# Data and Model Artifacts
 data/*.csv
 models/*.joblib
 
-# Docker / OS settings
+# Container & OS
 .DS_Store
 .env
