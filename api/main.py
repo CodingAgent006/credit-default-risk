@@ -12,16 +12,15 @@ ml_artifacts = {}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Fail fast on container startup if model is missing
     if not MODEL_PATH.exists():
-        raise RuntimeError(f"Model artifact not found at {MODEL_PATH}. Train model first!")
+        raise RuntimeError(f"Model artifact missing at {MODEL_PATH}. Train model first!")
     ml_artifacts["pipeline"] = joblib.load(MODEL_PATH)
     yield
     ml_artifacts.clear()
 
 app = FastAPI(
     title="Credit Default Risk API",
-    description="API for predicting loan default probabilities",
+    description="Calibrated API for loan default prediction",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -56,4 +55,4 @@ def predict_default_risk(application: LoanApplication, threshold: float = 0.35):
             "threshold_used": threshold
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
