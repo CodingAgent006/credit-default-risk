@@ -56,7 +56,17 @@ credit-default-risk/
     ├── test_api.py          # Integration tests for FastAPI endpoints
     └── test_features.py     # Unit tests for feature pipelines
 ```
+## 📦 Data Source
 
+The dataset used in this project is the **[Credit Risk Dataset on Kaggle](https://www.kaggle.com/datasets/laotse/credit-risk-dataset)**.
+
+To set up the dataset locally:
+1. Download `credit_risk_dataset.csv` from Kaggle.
+2. Place the file inside the `data/` directory:
+   ```text
+   credit-default-risk/
+   └── data/
+       └── credit_risk_dataset.csv
 ---
 
 ## 🛠️ Installation & Setup
