@@ -5,10 +5,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, FunctionTransformer
 
 def build_preprocessor() -> ColumnTransformer:
-    """Creates preprocessing pipeline without data leakage."""
+    """Creates leakage-free preprocessing pipeline."""
     
-    # 1. Numerical Pipeline: Median Impute -> Log Transform Income -> Scale
-    # We use a custom transformer logic for income log-scaling
     log_cols = ['person_income']
     standard_num_cols = [
         'person_age', 'person_emp_length', 'loan_amnt', 
@@ -26,23 +24,19 @@ def build_preprocessor() -> ColumnTransformer:
         ('scaler', StandardScaler())
     ])
 
-    # 2. Categorical Pipeline
     cat_cols = [
         'person_home_ownership', 'loan_intent', 
         'loan_grade', 'cb_person_default_on_file'
     ]
     
     cat_pipeline = Pipeline(steps=[
-        ('onehot', OneHotEncoder(handle_unknown='ignore', drop='first'))
+        ('onehot', OneHotEncoder(handle_unknown='ignore', drop='first', sparse_output=False))
     ])
 
-    # 3. Combine Processors
-    preprocessor = ColumnTransformer(
+    return ColumnTransformer(
         transformers=[
             ('num_log', log_pipeline, log_cols),
             ('num_std', num_pipeline, standard_num_cols),
             ('cat', cat_pipeline, cat_cols)
         ]
     )
-    
-    return preprocessor
