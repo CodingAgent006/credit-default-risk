@@ -1,14 +1,12 @@
-# Python environment & cache
 .venv/
 __pycache__/
 *.pyc
 .pytest_cache/
 .ipynb_checkpoints/
 
-# Data and Model Artifacts
 data/*.csv
-models/*.joblib
+models/*
+!models/.gitkeep
 
-# Container & OS
 .DS_Store
 .env
